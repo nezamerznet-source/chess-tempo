@@ -1,11 +1,12 @@
 import { createClient } from '@libsql/client';
 import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
+import { tursoAuthToken, tursoDatabaseUrl } from './turso-env.mjs';
 
-const url = process.env.TURSO_DATABASE_URL;
+const url = tursoDatabaseUrl();
 if (!url) throw new Error('Add TURSO_DATABASE_URL and TURSO_AUTH_TOKEN to the project environment.');
 if (process.env.VERCEL && url.startsWith('file:')) throw new Error('Use a remote Turso database on Vercel.');
-const client = createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN });
+const client = createClient({ url, authToken: tursoAuthToken() });
 
 try {
   await client.execute('CREATE TABLE IF NOT EXISTS tempo_migrations (name TEXT PRIMARY KEY NOT NULL, checksum TEXT NOT NULL, applied_at INTEGER NOT NULL)');
