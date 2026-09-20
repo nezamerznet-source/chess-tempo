@@ -1,15 +1,16 @@
 import { createClient, type Client, type InValue, type ResultSet } from "@libsql/client";
+import { tursoAuthToken, tursoDatabaseUrl } from "./turso-env";
 
 let client: Client | undefined;
 
 function connection() {
   if (client) return client;
-  const url = process.env.TURSO_DATABASE_URL;
+  const url = tursoDatabaseUrl();
   if (!url) throw new Error("Set TURSO_DATABASE_URL before using accounts and game history.");
   if (process.env.VERCEL && url.startsWith("file:")) {
     throw new Error("Vercel requires a remote Turso database; local files are not persistent.");
   }
-  client = createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN });
+  client = createClient({ url, authToken: tursoAuthToken() });
   return client;
 }
 
